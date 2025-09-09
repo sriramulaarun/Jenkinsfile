@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    environment {
+        PROJECT_NAME = "my-python-project"
+        PYVER = "3.10"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/sriramulaarun/my-python-project.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat """
+                    python -m venv venv
+                    venv\\Scripts\\activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                """
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat """
+                    venv\\Scripts\\activate
+                    pytest
+                """
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Deploying ${env.PROJECT_NAME}..."
+            }
+        }
+    }
+}
